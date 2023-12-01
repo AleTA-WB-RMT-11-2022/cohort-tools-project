@@ -61,6 +61,8 @@ app.get("/docs", (req, res) => {
 //   res.json(students)
 // })
 
+// COHORT ROUTES
+
 // DAY 2 Replace sending static data by quering the DB instead
 app.get("/api/cohorts", (req, res, next) => {
   Cohort.find()
@@ -72,13 +74,115 @@ app.get("/api/cohorts", (req, res, next) => {
     });
 });
 
+// DAY 3 Create all routes
+app.post("/api/cohorts", (req, res, next) => {
+  Cohort.create(req.body)
+    .then((newCohort) => {
+      // needs to return just created cohort(not specify in readme)
+      res.status(200).json(newCohort)
+    })
+    .catch((err) => {
+      console.log("error creating new cohort", err);
+    });
+});
+
+app.get("/api/cohorts/:cohortId", (req, res, next) => {
+  Cohort.findById(req.params.cohortId)
+    .then((cohortFromDB) => {
+      res.json(cohortFromDB);
+    })
+    .catch((err) => {
+      console.log(`error getting cohort with id: ${req.params.cohortId} from DB`, err);
+    });
+});
+
+app.put("/api/cohorts/:cohortId", (req, res, next) => {
+  Cohort.findByIdAndUpdate(req.params.cohortId, req.body)
+    .then(() => {
+      res.status(200).json()
+    })
+    .catch((err) => {
+      console.log(`error updating cohort with id: ${req.params.cohortId} from DB`, err);
+    });
+});
+
+app.delete("/api/cohorts/:cohortId", (req, res, next) => {
+  Cohort.findByIdAndDelete(req.params.cohortId)
+    .then(() => {
+      res.status(200).json()
+    })
+    .catch((err) => {
+      console.log(`error deleting cohort with id: ${req.params.cohortId} from DB`, err);
+    });
+});
+
+// STUDENTS ROUTES
+
+// DAY 2 Replace sending static data by quering the DB instead
 app.get("/api/students", (req, res, next) => {
   Student.find()
+    .populate("cohort")
     .then((studentsFromDB) => {
       res.json(studentsFromDB);
     })
     .catch(() => {
       console.log("error getting list of students from DB", err);
+    });
+});
+
+// DAY 3 Create all routes
+app.post("/api/students", (req, res, next) => {
+  Student.create(req.body)
+    .then(() => {
+      res.status(200).json()
+    })
+    .catch(() => {
+      console.log("error creating new student", err);
+    });
+});
+
+app.get("/api/students/:studentId", (req, res, next) => {
+  Student.findById(req.params.studentId)
+    .populate("cohort")
+    .then((studentFromDB) => {
+      res.json(studentFromDB);
+    })
+    .catch(() => {
+      console.log(`error getting student with id: ${req.params.studentId} from DB`, err);
+    });
+});
+
+app.get("/api/students/cohort/:cohortId", (req, res, next) => {
+  Student.find({ cohort: req.params.cohortId })
+    .populate("cohort")
+    .then((studentsFromDB) => {
+      res.json(studentsFromDB);
+    })
+    .catch(() => {
+      console.log(
+        `error getting students that belong to cohort with id: ${req.params.cohortId} from DB`,
+        err
+      );
+    });
+});
+
+app.put("/api/students/:studentId", (req, res, next) => {
+  Student.findByIdAndUpdate(req.params.studentId, req.body)
+    .then(() => {
+      res.status(200).json()
+    })
+    .catch(() => {
+      console.log(`error updating student with id: ${req.params.studentId}`, err);
+    });
+});
+
+app.delete("/api/students/:studentId", (req, res, next) => {
+  Student.findByIdAndDelete(req.params.studentId)
+    .then(() => {
+      res.status(200).json()
+    })
+    .catch(() => {
+      console.log(`error deleting student with id: ${req.params.studentId}`, err);
     });
 });
 

@@ -47,10 +47,11 @@ const studentSchema = new Schema({
     type: String,
     default: "https://i.imgur.com/r8bo8u7.png",
   },
-  cogort: {
-    type: Schema.ObjectId,
+  cohort: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Cohort"
   },
   projects: [],
 });
 
-module.exports = model("Student", studentSchema);
+module.exports = mongoose.model("Student", studentSchema);
